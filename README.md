@@ -3,31 +3,12 @@
 Essa aplicação utiliza o [platformio](https://platformio.org/) e um dev kit nodemcu **esp8266**
 
 
-Mude o _SSID_ e _PASSWORD_ para a sua rede local
+crie um arquivo __secrets.h__ e coloquei os valores do  _SSID_ e _PASSWORD_ para a sua rede local
 
 ```C++
-void connect_to_my_wifi()
-{
-  auto ssid = "SSID";
-  auto password = "PASSWORD";
-
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-
-  Serial.print("Trying to connect ");
-  Serial.println(ssid);
-
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(700);
-    Serial.print(".");
-  }
-
-  Serial.print("connected to  ");
-  Serial.println(ssid);
-
-  return;
-}
+//secrets.h
+#define SSID "SSID"
+#define PASSWORD "PASSWORD"
 
 ```
 

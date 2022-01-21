@@ -1,7 +1,9 @@
 #include <Arduino.h>
 #include "ESP8266WiFi.h"
 #include "ESP8266WebServer.h"
-#include <ESP8266mDNS.h>
+#include "ESP8266mDNS.h"
+
+#include "secrets.h"
 
 #define BLUE_LED D1
 #define YELLOW_LED D2
@@ -42,14 +44,13 @@ void set_pins()
 }
 void connect_to_my_wifi()
 {
-  auto ssid = "SSID";
-  auto password = "PASSWORD";
+ 
 
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
+  WiFi.begin(SSID, PASSWORD);
 
   Serial.print("Trying to connect ");
-  Serial.println(ssid);
+  Serial.println(SSID);
 
   while (WiFi.status() != WL_CONNECTED)
   {
@@ -58,7 +59,7 @@ void connect_to_my_wifi()
   }
 
   Serial.print("connected to  ");
-  Serial.println(ssid);
+  Serial.println(SSID);
 
   return;
 }
@@ -83,7 +84,7 @@ void set_routers()
                     return;
                   }
 
-                  WEB_SERVER.send(200, "text/html", get_home_page());
+                  WEB_SERVER.send(201, "text/plain", request_body);
 
                   auto result = parse_request_body(request_body);
 
@@ -92,7 +93,7 @@ void set_routers()
 
   WEB_SERVER.begin();
 
-  Serial.println("Http server started on " + WiFi.localIP().toString() + ":80");
+  Serial.println("Http server started on  http://" + WiFi.localIP().toString() + ":80");
 }
 
 void loop()
@@ -128,24 +129,53 @@ const char *get_home_page()
 {
   return R"(<!DOCTYPE html>
 <html>
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <title>ESP 8266</title>
+</head>
+
 <body>
 
-<h2>ESP 8266</h2>
+    <div style="width: 100%; height: 100%; margin-left: 1%;">
+        <h1>ESP 8266</h1>
+        <p>change led status</p>
+        <div style="display:flex; width: 100%; height: 100%;">
 
-<form action="/led" method="post">
-  <label for="led">Choose a led:</label>
-<select id="led" name="led">
-  <option value="Yellow">Yellow</option>
-  <option value="blue">Blue</option>
-</select>
+            <form id="led_form" action="/led" method="post" target="dummyframe" style="width: 100%;">
+                <div class="form-floating" style=" width: 7%;margin-bottom: 1%;">
 
-  <input id="submit" type="submit" name="action" value="ON">
-  <input id="submit" type="submit" name="action" value="OFF">
-</form> 
+                    <select class="form-select" aria-label="Floating label select example" id="led" name="led">
+                        <option value="Yellow">Yellow</option>
+                        <option value="blue">Blue</option>
+                    </select>
 
-<p>change led status</p>
+                    <label for="led">Choose a led:</label>
+                </div>
 
+
+
+                <input class="btn btn-success" style="margin-right: 1.2%;" id="submit" type="submit" name="action"
+                    value="ON">
+                <input class="btn btn-danger" id="submit" type="submit" name="action" value="OFF">
+            </form>
+        </div>
+    </div>
+
+
+    <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>
 )";
 }
