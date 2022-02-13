@@ -2,8 +2,8 @@
 #define TEMPERATURE_H
 
 #include "hadware_abstraction_layer.h"
-#include "response.hpp"
-#include "request.hpp"
+#include "../../response.hpp"
+#include "../../request.hpp"
 
 class TemperatureRequestHandle
 {

@@ -2,19 +2,8 @@
 
 #define LED_H
 
-enum class LedColor
-{
-    white,
-    red,
-    blue,
-    green,
-    yellow
-};
-enum class LedStatus
-{
-    on,
-    off
-};
+#include "led_color.h"
+#include "led_status.h"
 
 class Led
 {
@@ -30,12 +19,6 @@ public:
         this->color = color;
         this->status = status;
     };
-    // ~Led();
 };
 
-
-// Led::~Led()
-// {
-// }
-
-#endif //LED_H
+#endif // LED_H

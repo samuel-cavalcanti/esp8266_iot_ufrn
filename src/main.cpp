@@ -1,42 +1,36 @@
 #include <Arduino.h>
-#include <hardware.h>
-#include <routes.h>
-
+#include <hardware_esp8266.h>
+#include <mqtt_connection.h>
 #include "ESP8266WiFi.h"
-#include "ESP8266WebServer.h"
-#include "ESP8266mDNS.h"
 
 #include "secrets.h"
+#include "adafruit_io_secrets.h"
 
-ESP8266WebServer WEB_SERVER(80);
-
-HardwareAbstractionLayer *hardware = new Esp8266();
-auto leds = LedsRequestHandle(hardware);
-auto temperature = TemperatureRequestHandle(hardware);
+HardwareAbstractionLayer *hardware;
+MQTTConnection *connection;
 
 void connect_to_my_wifi();
-
-void set_routers();
-const char *home_page_html();
+// void multicast_dns_setup();
+void serial_connection_setup();
 void setup()
+{
+  hardware = new HardwareEsp8266();
+  auto mqtt_params = new MQTTConnectionParameters{"io.adafruit.com", 1883, ADAFRUIT_IO_USERNAME, ADAFRUIT_IO_KEY};
+  connection = new MQTTConnection(mqtt_params, hardware);
+
+  serial_connection_setup();
+  connect_to_my_wifi();
+  // multicast_dns_setup();
+  hardware->setup();
+  connection->setup();
+
+  Serial.println("local ip  " + WiFi.localIP().toString());
+}
+
+void serial_connection_setup()
 {
   Serial.begin(115200);
   delay(500);
-
-  hardware->setup();
-
-  connect_to_my_wifi();
-
-  if (MDNS.begin("esp8266"))
-    Serial.println("MDNS responder started on http://esp8266.local/");
-  else
-    Serial.println("Unable to start MDNS");
-
-  set_routers();
-
-  WEB_SERVER.begin();
-
-  Serial.println("Http server started on  http://" + WiFi.localIP().toString() + ":80");
 }
 
 void connect_to_my_wifi()
@@ -57,38 +51,16 @@ void connect_to_my_wifi()
   Serial.print("connected to  ");
   Serial.println(SSID);
 }
+// void multicast_dns_setup()
+// {
+//   if (MDNS.begin("esp8266"))
+//     Serial.println("MDNS responder started on http://esp8266.local/");
+//   else
+//     Serial.println("Unable to start MDNS");
+// }
 
 void loop()
 {
-
-  WEB_SERVER.handleClient();
-  MDNS.update();
-}
-
-void set_router(const char *end_point, HTTPMethod method, std::function<const Response(const Request)> request_handle)
-{
-  WEB_SERVER.on(end_point, method, [request_handle]()
-                {
-                  auto request = Request(WEB_SERVER.arg("plain"));
-
-                  Response response = request_handle(request);
-
-                  String body = response.body;
-
-                  WEB_SERVER.send(response.code, response.content_type, body); });
-}
-
-void set_routers()
-{
-
-  set_router(INDEX_END_POINT, HTTP_GET, get_index);
-
-  set_router(TEMPERATURE_END_POINT, HTTP_GET, [](auto request)
-             { return temperature.get_temperature(request); });
-
-  set_router(LEDS_END_POINT, HTTP_GET, [](auto request)
-             { return leds.get_leds(request); });
-
-  set_router(LEDS_END_POINT, HTTP_POST, [](auto request)
-             { return leds.post_led(request); });
+  connection->loop();
+  // MDNS.update();
 }

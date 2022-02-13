@@ -4,3 +4,4 @@
 .vscode/launch.json
 .vscode/ipch
 src/secrets.h
+src/adafruit_io_secrets.h

@@ -1,20 +1,19 @@
-
-#include "esp8266.h"
+#include <hardware_esp8266.h>
 #include "Arduino.h"
 
 #define BLUE_LED D1
 #define YELLOW_LED D2
 #define LM35 A0
 
-Esp8266::Esp8266(/* args */)
+HardwareEsp8266::HardwareEsp8266(/* args */)
 {
 }
 
-Esp8266::~Esp8266()
+HardwareEsp8266::~HardwareEsp8266()
 {
 }
 
-const float Esp8266::read_temperature_in_celsius()
+const float HardwareEsp8266::read_temperature_in_celsius()
 {
 
     auto raw_input = analogRead(LM35);
@@ -40,12 +39,12 @@ const float Esp8266::read_temperature_in_celsius()
     return (max_voltage_in_volts * ((float)raw_input) / max_raw_input_value) / volts_per_celsius;
 }
 
-void Esp8266::setup()
+void HardwareEsp8266::setup()
 {
     set_pins();
 }
 
-void Esp8266::set_pins()
+void HardwareEsp8266::set_pins()
 {
     pinMode(BLUE_LED, OUTPUT);
     pinMode(YELLOW_LED, OUTPUT);
@@ -57,7 +56,7 @@ void Esp8266::set_pins()
     digitalWrite(YELLOW_LED, LOW);
 }
 
-const std::vector<Led> Esp8266::get_leds()
+const std::vector<Led> HardwareEsp8266::get_leds()
 {
     return std::vector<Led>{
         Led(BLUE_LED, LedColor::blue, get_led_Status(BLUE_LED)),
@@ -65,12 +64,12 @@ const std::vector<Led> Esp8266::get_leds()
     };
 }
 
-const LedStatus Esp8266::get_led_Status(int led_pin)
+const LedStatus HardwareEsp8266::get_led_Status(int led_pin)
 {
     return digitalRead(led_pin) ? LedStatus::on : LedStatus::off;
 }
 
-void Esp8266::update_led_status(unsigned int led_id, LedStatus status)
+void HardwareEsp8266::update_led_status(unsigned int led_id, LedStatus status)
 {
     auto value = status == LedStatus::on ? HIGH : LOW;
     digitalWrite(led_id, value);

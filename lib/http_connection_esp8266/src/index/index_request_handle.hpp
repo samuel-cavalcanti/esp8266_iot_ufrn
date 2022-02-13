@@ -1,13 +1,15 @@
-#ifndef INDEX_REQUEST_HANDLE
-#define INDEX_REQUEST_HANDLE
+#ifndef INDEX_REQUEST_HANDLE_H
+#define INDEX_REQUEST_HANDLE_H
 
 #include "Arduino.h"
-#include "request.hpp"
-#include "response.hpp"
+#include "../request.hpp"
+#include "../response.hpp"
 
-const char *home_page_html()
+class IndexRequestHandle
 {
-    return R"(<!DOCTYPE html>
+private:
+    /* data */
+    const char *home_page_html = R"(<!DOCTYPE html>
 <html>
 
 <head>
@@ -36,12 +38,13 @@ const char *home_page_html()
 
 </html>
 )";
-}
 
-const Response get_index(const Request &request)
-{
-    String body = home_page_html();
-    return Response(200, HTML_CONTENT_TYPE, body);
-}
+public:
+    const Response get_index(const Request &request)
+    {
+        String body = home_page_html;
+        return Response(200, HTML_CONTENT_TYPE, body);
+    }
+};
 
-#endif
+#endif // INDEX_REQUEST_HANDLE_H
