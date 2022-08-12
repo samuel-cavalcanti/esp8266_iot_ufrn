@@ -2,6 +2,8 @@
 
 Essa aplicação utiliza o [platformio](https://platformio.org/) e um dev kit nodemcu **esp8266**
 
+Uma simples tutorial que ensina como instalar e usar o PlatformIO: [arduino-vscode-platformio](https://embarcados.com.br/arduino-vscode-platformio/)
+
 
 crie um arquivo __secrets.h__ e coloquei os valores do  _SSID_ e _PASSWORD_ para a sua rede local
 
